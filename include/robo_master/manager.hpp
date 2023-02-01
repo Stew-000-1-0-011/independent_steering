@@ -14,13 +14,13 @@ namespace crs_lib::MotorDriver::RoboMaster
 		ros::Publisher speed_controller1_4_pub;
 		ros::Publisher speed_controller5_8_pub;
 
-	public:
 		SpeedControllerMessage motor1_4{};
 		SpeedControllerMessage motor5_8{};
 
-		RoboMasterMdManager(ros::NodeHandle& nh, adhoc_can_plugins2::CallbackManager& callback_manager):
-			motor1_4{nh.advertise<independent_steering::CanFrame>("can" + std::to_string(0x200), 1)},
-			motor5_8{nh.advertise<independent_steering::CanFrame>("can" + std::to_string(0x1FF), 1)}
+	public:
+		RoboMasterMdManager(ros::NodeHandle& nh):
+			speed_controller1_4_pub{nh.advertise<independent_steering::CanFrame>("can" + std::to_string(0x200), 1)},
+			speed_controller5_8_pub{nh.advertise<independent_steering::CanFrame>("can" + std::to_string(0x1FF), 1)}
 		{}
 
 		void publish()

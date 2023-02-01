@@ -1,3 +1,5 @@
+// 用途不明。
+
 #pragma once
 
 #include <utility>
@@ -9,7 +11,6 @@
 
 namespace crs_lib::adhoc_can_plugins2
 {
-
 	class CallbackManager final
 	{
 		using Callback = void (const char *const) noexcept;

@@ -54,17 +54,16 @@ namespace crs_lib::MotorDriver::RoboMaster
 		std::atomic<i16> * target_current_p;
 
 		Mode mode{Mode::stop};
-		int index;
 
 	public:
-		RoboMasterMd(const int index, std::atomic<i16> *const target_current_p, CRSLib::PidController<float>&& current_pid, CRSLib::PidController<float>&& velocity_pid, CRSLib::PidController<float>&& position_pid, adhoc_can_plugins2::CallbackManager& callback_manager):
-			current_pid{std::move(current_pid)},
-			velocity_pid{std::move(velocity_pid)},
-			position_pid{std::move(position_pid)},
+		RoboMasterMd(std::atomic<i16> *const target_current_p, CRSLib::PidController<float>::Parameters& current, CRSLib::PidController<float>::Parameters& velocity, CRSLib::PidController<float>::Parameters& position/*, adhoc_can_plugins2::CallbackManager& callback_manager*/):
+			current_pid{current},
+			velocity_pid{velocity},
+			position_pid{position},
 			target_current_p{target_current_p},
-			index{index}
 		{
-			callback_manager.push();
+			// なんだこれ...
+			// callback_manager.push();
 		}
 
 		RoboMasterMd(RoboMasterMd&& other):
@@ -73,7 +72,6 @@ namespace crs_lib::MotorDriver::RoboMaster
 			position_pid{std::move(other.position_pid)},
 			current_state{other.current_state},
 			mode{other.mode},
-			index{other.index}
 		{}
 
 	public:
@@ -143,12 +141,13 @@ namespace crs_lib::MotorDriver::RoboMaster
 			return current_state;
 		}
 
-	private:
-		void robo_master_can_callback(const char *const data) noexcept
-		{
-			std::lock_guard lock{current_state_mutex};
-			std::memcpy(data, &current_state, 7);
-		}
+	// 謎
+	// private:
+	// 	void robo_master_can_callback(const char *const data) noexcept
+	// 	{
+	// 		std::lock_guard lock{current_state_mutex};
+	// 		std::memcpy(data, &current_state, 7);
+	// 	}
 	};
 
 	static_assert(MotorDriverC<RoboMasterMd>);
