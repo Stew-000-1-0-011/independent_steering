@@ -6,10 +6,15 @@
  * このクラスを用いる側がそこらへんは考慮すること
  * @version 0.1
  * @date 2022-11-23
- * 
+ * @todo 無限回転ができないときにどうするかをここで責任とる。
  */
 
 #include <utility>
+#include <cmath>
+#include <numbers>
+
+#include "motor_driver.hpp"
+#include "utility.hpp"
 
 namespace crs_lib
 {
@@ -17,7 +22,7 @@ namespace crs_lib
 	 * @tparam SteeringMd ステアリング角を位置制御するモータードライバ
 	 * @tparam DrivingMd 駆動輪を速度制御するモータードライバ
 	 */
-	template<class SteeringMd, class DrivingMd>
+	template<crs_lib::MotorDriver::PositionControlable SteeringMd, crs_lib::MotorDriver::VelocityControlable DrivingMd>
 	class SteeringWheel final
 	{
 		SteeringMd steering_md;
@@ -44,13 +49,23 @@ namespace crs_lib
 		/**
 		 * @brief 目標値を更新する。
 		 * 
-		 * @param steering_angle ホイールのステアリング角
+		 * @param steering_angle ホイールのステアリング角。[-pi. pi]に正規化されていなければならない。
 		 * @param driving_velocity ホイールの駆動部の角速度 * ホイール半径
 		 */
 		void update(const double steering_angle, const double driving_velocity)
 		{
-			steering_md.update(steering_angle * gear_ratio_steering_par_motor);
-			driving_velocity.update(driving_velocity * wheel_radius_reciprocal);
+			normalize_angle(steering_md.get_position() / gear_ratio_steering_par_motor);
+
+			steering_md.position_update();
+			driving_velocity.velocity_update(driving_velocity * wheel_radius_reciprocal);
+		}
+
+		/**
+		 * @brief 零点合わせを行う
+		*/
+		void ajust_zero_point()
+		{
+
 		}
 	};
 }

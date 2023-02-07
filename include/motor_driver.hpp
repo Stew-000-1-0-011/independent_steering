@@ -14,7 +14,7 @@ namespace crs_lib::MotorDriver
 	};
 
 	template<class T>
-	concept MotorDriverC = requires(T motor_driver, const T const_motor_driver, const float target)
+	concept MotorDriver = requires(T motor_driver, const T const_motor_driver, const float target)
 	{
 		requires std::move_constructible<T>;
 		{const_motor_driver.get_mode()} noexcept -> std::same_as<Mode>;
@@ -23,14 +23,16 @@ namespace crs_lib::MotorDriver
 	};
 
 	template<class T>
-	concept VelocityControlableC = MotorDriverC<T> && requires(T motor_driver, const float target)
+	concept VelocityControlable = MotorDriver<T> && requires(T motor_driver, const float target)
 	{
 		motor_driver.velocity_update(target);
+		{motor_driver.get_velocity()} -> std::same_as<float>;
 	};
 
 	template<class T>
-	concept PositionControlableC = MotorDriverC<T> && requires(T motor_driver, const float target)
+	concept PositionControlable = MotorDriver<T> && requires(T motor_driver, const float target)
 	{
 		motor_driver.position_update(target);
+		{motor_driver.get_position()} -> std::same_as<float>;
 	};
 }
