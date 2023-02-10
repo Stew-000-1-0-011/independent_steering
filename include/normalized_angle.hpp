@@ -37,8 +37,8 @@ namespace CRSLib::NormalizedAngle
 
 		constexpr NormalizedAngle reverse() const noexcept
 		{
-			if(value > 0) return std::numbers::pi_v<T> - value;
-			else return std::numbers::pi_v<T> + value;
+			if(value > 0) return NormalizedAngle{std::numbers::pi_v<T> - value};
+			else return NormalizedAngle{std::numbers::pi_v<T> + value};
 		}
 	};
 

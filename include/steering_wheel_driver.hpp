@@ -58,13 +58,21 @@ namespace crs_lib
 		 * @param steering_angle ホイールのステアリング角。
 		 * @param driving_velocity ホイールの駆動部の角速度 * ホイール半径
 		 */
-		void update(const CRSLib::NormalizedAngle::NormalizedAngle<double> steering_angle, const double driving_velocity)
+		void update(CRSLib::NormalizedAngle::NormalizedAngle<double> steering_angle, double driving_velocity)
 		{
 			using CRSLib::NormalizedAngle::normalize_angle;
 			using CRSLib::NormalizedAngle::minimum_diff;
 
 			const auto current_motor = steering_md.get_position();
 			const auto current_steer = normalize_angle(current_motor * gear_ratio_steering_par_motor);
+
+			// 真逆に駆動輪を動かすのは避けたい。そこで、操舵角にしわ寄せさせて駆動輪はなるべく負荷なくさせる。
+			if(std::signbit(driving_velocity) ^ std::signbit(current_steer))
+			{
+				steering_angle.reverse();
+				driving_velocity = -driving_velocity;
+			}
+
 			const auto target_diff = minimum_diff(steering_angle, current_steer);
 			const double target = current_motor + target_diff * gear_ratio_motor_par_steering;
 
