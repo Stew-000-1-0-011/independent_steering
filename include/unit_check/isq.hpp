@@ -38,12 +38,20 @@ namespace CRSLib::UnitCheck
 
 		consteval friend auto operator+(const Isq& l, const Isq& r)
 		{
-			if(l == r) return l;
+			if(l != r)
+			{
+				constexpr int a = 0 / 0;
+			}
+			return l;
 		}
 
 		consteval friend auto operator-(const Isq& l, const Isq& r)
 		{
-			if(l == r) return l;
+			if(l != r)
+			{
+				constexpr int a = 0 / 0;
+			}
+			return l;
 		}
 	};
 }

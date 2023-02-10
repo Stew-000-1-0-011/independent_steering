@@ -82,28 +82,28 @@ namespace CRSLib::UnitCheck
 			return element(std::forward<Args>(args)...);
 		}
 
-		constexpr operator const Element&() const&
+		explicit constexpr operator const Element&() const&
 		requires
 			(unit.is_zero())
 		{
 			return element;
 		}
 
-		constexpr operator Element&() &
+		explicit constexpr operator Element&() &
 		requires
 			(unit.is_zero())
 		{
 			return element;
 		}
 
-		constexpr operator const Element&&() const&& noexcept
+		explicit constexpr operator const Element&&() const&& noexcept
 		requires
 			(unit.is_zero())
 		{
 			return std::move(element);
 		}
 
-		constexpr operator Element&&() && noexcept
+		explicit constexpr operator Element&&() && noexcept
 		requires
 			(unit.is_zero())
 		{

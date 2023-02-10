@@ -13,10 +13,5 @@ namespace crs_lib::MotorDriver::RoboMaster
 		{
 			return target_currents[0] | target_currents[1] << 2 | target_currents[2] << 4 | target_currents[3] << 6;
 		}
-
-		std::atomic<i16> * get_target_current_p(const unsigned int index)
-		{
-			return target_currents + index;
-		}
 	};
 }

@@ -7,7 +7,7 @@
 
 #include <CRSLib/include/std_int.hpp>
 
-namespace crs_lib::can_plugins2
+namespace crs_lib::adhoc_can_plugins2
 {
 	using namespace CRSLib::IntegerTypes;
 

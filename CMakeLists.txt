@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.0.2)
 project(independent_steering)
 
 ## Compile as C++11, supported in ROS Kinetic and newer
-add_compile_options(-std=c++20)
+add_compile_options(-std=c++20 -fmax-errors=10)
 
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
@@ -51,6 +51,8 @@ find_package(catkin REQUIRED
 add_message_files(
   FILES
   CanFrame.msg
+  Linear2D.msg
+  Angular2D.msg
 #   Message1.msg
 #   Message2.msg
 )
@@ -119,13 +121,19 @@ catkin_package(
 ## Your package locations should be listed before other locations
 include_directories(
 include
+/home/shnsk/catkin_ws/src/crs_lib/include
+/home/shnsk/catkin_ws
 ${catkin_INCLUDE_DIRS}
 )
 
-## Declare a C++ library
+# # Declare a C++ library
 # add_library(${PROJECT_NAME}
 #   src/${PROJECT_NAME}/independent_steering.cpp
 # )
+
+add_library(${PROJECT_NAME}
+  src/independent_steering_node.cpp
+)
 
 ## Add cmake target dependencies of the library
 ## as an example, code may need to be generated before libraries

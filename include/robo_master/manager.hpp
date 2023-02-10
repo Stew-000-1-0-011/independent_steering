@@ -2,7 +2,7 @@
 
 #include <ros/ros.h>
 
-#include <CanFrame.h>
+#include <independent_steering/CanFrame.h>
 
 #include "speed_controller_message.hpp"
 #include "md.hpp"
@@ -34,6 +34,12 @@ namespace crs_lib::MotorDriver::RoboMaster
 			const u64 data5_8 = motor5_8.get_packed_data();
 			std::memcpy(frame.data.data(), &data5_8, 8);
 			speed_controller5_8_pub.publish(frame);
+		}
+
+		std::atomic<i16> * get_target_current_p(const unsigned int index)
+		{
+			if(index < 4) return motor1_4.target_currents + index;
+			else return motor5_8.target_currents + (index - 4);
 		}
 	};
 }

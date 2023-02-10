@@ -34,5 +34,7 @@ namespace crs_lib::MotorDriver
 	{
 		motor_driver.position_update(target);
 		{motor_driver.get_position()} -> std::same_as<float>;
+		{motor_driver.ajust_zero_point()};
+		{motor_driver.finished_ajusting_zero()} -> std::same_as<bool>;
 	};
 }
