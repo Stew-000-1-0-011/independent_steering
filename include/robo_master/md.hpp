@@ -1,3 +1,15 @@
+/**
+ * @file md.hpp
+ * @author Stew (you@domain.com)
+ * @brief RoboMasterControllerを使った場合のmotor_driver。
+ * @version 0.1
+ * @date 2023-02-18
+ * @attention
+ * canのサブスクライバをcan_callback_managerに変えないとダメ。さもなくばろくに動かないはず。
+ * @copyright Copyright (c) 2023
+ * 
+ */
+
 #pragma once
 
 #include <cstring>
@@ -10,9 +22,9 @@
 
 #include <CRSLib/include/pid_controller.hpp>
 
-#include <independent_steering/CanFrame.h>
+#include <adhoc_canplugins_onehalf/CanFrame.h>
 
-#include "../std_type.hpp"
+#include <CRSLibtmp/std_type.hpp>
 // #include "../adhoc_can_callback_manager.hpp"
 #include "../motor_driver.hpp"
 
@@ -55,7 +67,8 @@ namespace crs_lib::MotorDriver::RoboMaster
 
 		Mode mode{Mode::stop};
 		
-		ros::Subscriber can_sub;
+		// 同じトピックに対するsubscriberを複数持つことはできない。
+		// ros::Subscriber can_sub;
 
 	public:
 		Md(ros::NodeHandle& nh, std::atomic<i16> *const target_current_p, CRSLib::PidController<float>::Parameters& current, CRSLib::PidController<float>::Parameters& velocity, /*CRSLib::PidController<float>::Parameters& position,*/ const bool is_1_4/*, adhoc_can_plugins2::CallbackManager& callback_manager*/):
@@ -63,21 +76,15 @@ namespace crs_lib::MotorDriver::RoboMaster
 			velocity_pid{velocity},
 			// position_pid{position},
 			target_current_p{target_current_p},
-			can_sub{nh.subscribe<independent_steering::CanFrame>("can/" + is_1_4 ? std::to_string(0x200) : std::to_string(0x1FF), 1, &Md::robo_master_can_callback, this)}
+			can_sub{nh.subscribe<adhoc_canplugins_onehalf::CanFrame>("can" + is_1_4 ? std::to_string(0x200) : std::to_string(0x1FF), 1, &Md::robo_master_can_callback, this)}
 		{
 			// なんだこれ...
 			// callback_manager.push();
 		}
 
-		Md(Md&& other):
-			current_pid{std::move(other.current_pid)},
-			velocity_pid{std::move(other.velocity_pid)},
-			// position_pid{std::move(other.position_pid)},
-			current_state{other.current_state},
-			target_current_p{other.target_current_p},
-			mode{other.mode},
-			can_sub{std::move(other.can_sub)}
-		{}
+		// thisポインタを登録しているため、ムーブ不可
+		Md(Md&&) = delete;
+		Md& operator=(Md&&) = delete;
 
 	public:
 		MotorDriver::Mode get_mode() const noexcept
@@ -152,7 +159,7 @@ namespace crs_lib::MotorDriver::RoboMaster
 		}
 
 	private:
-		void robo_master_can_callback(const independent_steering::CanFrame::ConstPtr& frame) noexcept
+		void robo_master_can_callback(const adhoc_canplugins_onehalf::CanFrame::ConstPtr& frame) noexcept
 		{
 			std::lock_guard lock{current_state_mutex};
 			std::memcpy(&current_state, frame->data.data(), 7);
