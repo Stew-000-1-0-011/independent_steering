@@ -1,7 +1,7 @@
 #pragma once
 
 #include <atomic>
-#include "../std_type.hpp"
+#include <CRSLibtmp/std_type.hpp>
 
 namespace crs_lib::MotorDriver::RoboMaster
 {

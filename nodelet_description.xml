@@ -1,0 +1,10 @@
+<library path="lib/libindependent_steering">
+
+  <class name="independent_steering/IndependentSteeringNode"
+     type="crs_lib::IndependentSteeringNode"
+     base_class_type="nodelet::Nodelet">
+    <description>
+    </description>
+  </class>
+
+</library>

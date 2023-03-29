@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.0.2)
 project(independent_steering)
 
 ## Compile as C++11, supported in ROS Kinetic and newer
-add_compile_options(-std=c++20 -fmax-errors=10)
+add_compile_options(-std=c++17 -fmax-errors=10 -fconcepts)
 
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
@@ -11,7 +11,8 @@ find_package(catkin REQUIRED
   roscpp
   std_msgs
   message_generation
-  message_runtime
+  adhoc_canplugins_onehalf
+  can_plugins
 )
 
 ## System dependencies are found with CMake's conventions
@@ -50,7 +51,6 @@ find_package(catkin REQUIRED
 ## Generate messages in the 'msg' folder
 add_message_files(
   FILES
-  CanFrame.msg
   Linear2D.msg
   Angular2D.msg
 #   Message1.msg
@@ -108,8 +108,8 @@ generate_messages(
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
  INCLUDE_DIRS include
-#  LIBRARIES independent_steering
-#  CATKIN_DEPENDS other_catkin_pkg
+ LIBRARIES independent_steering
+  CATKIN_DEPENDS nodelet pluginlib message_runtime
 #  DEPENDS system_lib
 )
 
@@ -121,8 +121,7 @@ catkin_package(
 ## Your package locations should be listed before other locations
 include_directories(
 include
-/home/shnsk/catkin_ws/src/crs_lib/include
-/home/shnsk/catkin_ws
+~/catkin_ws
 ${catkin_INCLUDE_DIRS}
 )
 
@@ -159,6 +158,10 @@ add_library(${PROJECT_NAME}
 # target_link_libraries(${PROJECT_NAME}_node
 #   ${catkin_LIBRARIES}
 # )
+
+target_link_libraries(${PROJECT_NAME}
+  ${catkin_LIBRARIES}
+)
 
 #############
 ## Install ##

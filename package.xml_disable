@@ -56,10 +56,14 @@
 
   <exec_depend>message_runtime</exec_depend>
 
+  <depend>pluginlib</depend>
+  <depend>nodelet</depend>
+  <depend>adhoc_canplugins_onehalf</depend>
+
 
   <!-- The export tag contains other, unspecified, tags -->
   <export>
     <!-- Other tools can request additional information be placed here -->
-
+    <nodelet plugin="${prefix}/nodelet_description.xml"/>
   </export>
 </package>

@@ -2,7 +2,7 @@
 
 #include <ros/ros.h>
 
-#include <independent_steering/CanFrame.h>
+#include <adhoc_canplugins_onehalf/CanFrame.h>
 
 #include "speed_controller_message.hpp"
 #include "md.hpp"
@@ -19,13 +19,17 @@ namespace crs_lib::MotorDriver::RoboMaster
 
 	public:
 		RoboMasterMdManager(ros::NodeHandle& nh):
-			speed_controller1_4_pub{nh.advertise<independent_steering::CanFrame>("can" + std::to_string(0x200), 1)},
-			speed_controller5_8_pub{nh.advertise<independent_steering::CanFrame>("can" + std::to_string(0x1FF), 1)}
+			speed_controller1_4_pub{nh.advertise<adhoc_canplugins_onehalf::CanFrame>("can" + std::to_string(0x200), 1)},
+			speed_controller5_8_pub{nh.advertise<adhoc_canplugins_onehalf::CanFrame>("can" + std::to_string(0x1FF), 1)}
 		{}
+
+		// thisポインタを登録しているのでムーブ不可
+		RoboMasterMdManager(RoboMasterMdManager&&) = delete;
+		RoboMasterMdManager& operator=(RoboMasterMdManager&&) = delete;
 
 		void publish()
 		{
-			independent_steering::CanFrame frame{};
+			adhoc_canplugins_onehalf::CanFrame frame{};
 			frame.dlc = 8;
 			const u64 data1_4 = motor1_4.get_packed_data();
 			std::memcpy(frame.data.data(), &data1_4, 8);

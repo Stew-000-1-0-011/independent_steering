@@ -15,13 +15,13 @@
 
 #include <ros/ros.h>
 
-#include <independent_steering/CanFrame.h>
+#include <adhoc_canplugins_onehalf/CanFrame.h>
 
 #include <CRSLib/include/utility.hpp>
+#include <adhoc_canplugins_onehalf/adhoc_can_plugins2_pack.hpp>
 
 #include "std_type.hpp"
 #include "motor_driver.hpp"
-#include "adhoc_can_plugins2_pack.hpp"
 
 namespace crs_lib::MotorDriver
 {
@@ -57,9 +57,9 @@ namespace crs_lib::MotorDriver
 	public:
 		ShirasuMd(const u32 base_id, ros::NodeHandle& nh):
 			base_id{base_id},
-			can_mode_pub{nh.advertise<independent_steering::CanFrame>("can/" + std::to_string(base_id), 10)},
-			can_target_pub{nh.advertise<independent_steering::CanFrame>("can/" + std::to_string(base_id + 1), 1)},
-			can_status_sub{nh.subscribe<independent_steering::CanFrame>("can/" + std::to_string(base_id + 3), 1, &ShirasuMd::update_status, this)}
+			can_mode_pub{nh.advertise<adhoc_canplugins_onehalf::CanFrame>("can" + std::to_string(base_id), 10)},
+			can_target_pub{nh.advertise<adhoc_canplugins_onehalf::CanFrame>("can" + std::to_string(base_id + 1), 1)},
+			can_status_sub{nh.subscribe<adhoc_canplugins_onehalf::CanFrame>("can" + std::to_string(base_id + 3), 1, &ShirasuMd::update_status, this)}
 		{}
 
 		ShirasuMd(ShirasuMd&& md):
@@ -68,6 +68,8 @@ namespace crs_lib::MotorDriver
 			can_target_pub{std::move(can_target_pub)},
 			can_status_sub{std::move(can_status_sub)}
 		{}
+
+		ShirasuMd& operator=(ShirasuMd&&) = default;
 
 		void velocity_update(const float target)
 		// [[expects: mode == ShirasuMode::velocity]]
@@ -153,7 +155,8 @@ namespace crs_lib::MotorDriver
 		 */
 		void change_mode(const ShirasuMode mode)
 		{
-			independent_steering::CanFrame frame{};
+			ROS_INFO("change_mode")k
+			adhoc_canplugins_onehalf::CanFrame frame{};
 			frame.dlc = sizeof(ShirasuMode);
 			frame.data[0] = CRSLib::to_underlying(mode);
 
@@ -166,13 +169,14 @@ namespace crs_lib::MotorDriver
 	private:
 		void update(const float target)
 		{
-			independent_steering::CanFrame frame{};
+			adhoc_canplugins_onehalf::CanFrame frame{};
 			frame.dlc = sizeof(float);
-			adhoc_can_plugins2::pack<std::endian::big>(frame.data.data(), target);
+			adhoc_canplugins_onehalf::pack(frame.data.data(), target);
+			ROS_INFO("call shirasu md update.");
 			can_target_pub.publish(frame);
 		}
 
-		void update_status(const independent_steering::CanFrame::ConstPtr& frame)
+		void update_status(const adhoc_canplugins_onehalf::CanFrame::ConstPtr& frame)
 		{
 			std::lock_guard lock{mutex};
 

@@ -18,14 +18,14 @@
 #include <nodelet/nodelet.h>
 #include <pluginlib/class_list_macros.hpp>
 
-#include <independent_steering/CanFrame.h>
+#include <adhoc_canplugins_onehalf/CanFrame.h>
 #include <independent_steering/Linear2D.h>
 #include <independent_steering/Angular2D.h>
 
 // #include <crs_lib/uninitialized.hpp> // std::optionalでよくね？
-#include <crs_lib/rosparam_util.hpp>
 #include <robo_master/md.hpp>
 #include <robo_master/manager.hpp>
+#include <rosparam_util.hpp>
 #include <shirasu_md.hpp>
 #include <steering_wheel_driver.hpp>
 
@@ -147,6 +147,10 @@ namespace crs_lib
 				robomasu_pub_tim = (*config.nh).createTimer(ros::Duration{config.robomasu_pub_tim_duration}, &Inner::robomasu_pub_tim_callback, this);
 			}
 
+			// thisポインタを登録しているため、ムーブ不可
+			Inner(Inner&&) = delete;
+			Inner& operator=(Inner&&) = delete;
+
 			// Crab制御
 			void body_linear_velocity_callback(const independent_steering::Linear2D::ConstPtr& body_linear_velocity)
 			{
@@ -196,3 +200,5 @@ namespace crs_lib
 		}
 	};
 }
+
+PLUGINLIB_EXPORT_CLASS(crs_lib::IndependentSteeringNode, nodelet::Nodelet);
